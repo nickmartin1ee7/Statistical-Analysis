@@ -11,3 +11,13 @@ C:\Users\doort\Source\Repos\nickmartin1ee7\Statistical-Analysis\Statistics\Stati
 C:\Users\doort\Source\Repos\nickmartin1ee7\Statistical-Analysis\Statistics\Statistics\obj\Release\Statistics.csprojAssemblyReference.cache
 C:\Users\doort\Source\Repos\nickmartin1ee7\Statistical-Analysis\Statistics\Statistics\obj\Release\Statistics.exe.manifest
 C:\Users\doort\Source\Repos\nickmartin1ee7\Statistical-Analysis\Statistics\Statistics\obj\Release\Statistics.application
+C:\Users\doort\source\repos\Statistical-Analysis\Statistics\Statistics\bin\Release\Statistics.exe.config
+C:\Users\doort\source\repos\Statistical-Analysis\Statistics\Statistics\bin\Release\Statistics.exe
+C:\Users\doort\source\repos\Statistical-Analysis\Statistics\Statistics\bin\Release\Statistics.pdb
+C:\Users\doort\source\repos\Statistical-Analysis\Statistics\Statistics\obj\Release\Statistics.csprojAssemblyReference.cache
+C:\Users\doort\source\repos\Statistical-Analysis\Statistics\Statistics\obj\Release\Statistics.Form1.resources
+C:\Users\doort\source\repos\Statistical-Analysis\Statistics\Statistics\obj\Release\Statistics.Properties.Resources.resources
+C:\Users\doort\source\repos\Statistical-Analysis\Statistics\Statistics\obj\Release\Statistics.csproj.GenerateResource.cache
+C:\Users\doort\source\repos\Statistical-Analysis\Statistics\Statistics\obj\Release\Statistics.csproj.CoreCompileInputs.cache
+C:\Users\doort\source\repos\Statistical-Analysis\Statistics\Statistics\obj\Release\Statistics.exe
+C:\Users\doort\source\repos\Statistical-Analysis\Statistics\Statistics\obj\Release\Statistics.pdb
