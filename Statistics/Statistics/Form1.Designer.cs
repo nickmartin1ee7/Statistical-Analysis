@@ -383,7 +383,9 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Statistical Analysis";
+            this.HelpRequested += new System.Windows.Forms.HelpEventHandler(this.Form1_HelpRequested);
             this.ResumeLayout(false);
             this.PerformLayout();
 

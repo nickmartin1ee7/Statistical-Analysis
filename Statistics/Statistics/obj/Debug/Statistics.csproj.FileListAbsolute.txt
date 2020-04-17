@@ -16,3 +16,13 @@ C:\Users\doort\Google Drive\College\FALL CIS-199-75 C#\repos\MISC\Statistics\Sta
 C:\Users\doort\Google Drive\College\FALL CIS-199-75 C#\repos\MISC\Statistics\Statistics\obj\Debug\Statistics.exe
 C:\Users\doort\Google Drive\College\FALL CIS-199-75 C#\repos\MISC\Statistics\Statistics\obj\Debug\Statistics.pdb
 C:\Users\doort\Google Drive\College\FALL CIS-199-75 C#\repos\MISC\Statistics\Statistics\obj\Debug\Statistics.csprojAssemblyReference.cache
+C:\Users\doort\source\repos\Statistical-Analysis\Statistics\Statistics\bin\Debug\Statistics.exe.config
+C:\Users\doort\source\repos\Statistical-Analysis\Statistics\Statistics\bin\Debug\Statistics.exe
+C:\Users\doort\source\repos\Statistical-Analysis\Statistics\Statistics\bin\Debug\Statistics.pdb
+C:\Users\doort\source\repos\Statistical-Analysis\Statistics\Statistics\obj\Debug\Statistics.csprojAssemblyReference.cache
+C:\Users\doort\source\repos\Statistical-Analysis\Statistics\Statistics\obj\Debug\Statistics.Form1.resources
+C:\Users\doort\source\repos\Statistical-Analysis\Statistics\Statistics\obj\Debug\Statistics.Properties.Resources.resources
+C:\Users\doort\source\repos\Statistical-Analysis\Statistics\Statistics\obj\Debug\Statistics.csproj.GenerateResource.cache
+C:\Users\doort\source\repos\Statistical-Analysis\Statistics\Statistics\obj\Debug\Statistics.csproj.CoreCompileInputs.cache
+C:\Users\doort\source\repos\Statistical-Analysis\Statistics\Statistics\obj\Debug\Statistics.exe
+C:\Users\doort\source\repos\Statistical-Analysis\Statistics\Statistics\obj\Debug\Statistics.pdb

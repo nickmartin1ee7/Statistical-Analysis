@@ -7,6 +7,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 
 namespace Statistics
 {
@@ -36,6 +37,7 @@ namespace Statistics
         // Clear button (form cancel button) resets all textboxes & file name label to default strings
         private void clearBtn_Click(object sender, EventArgs e)
         {
+            ProcessWorking();
             once = false;
             linesTextBox.Text = "";
             sumTextBox.Text = "";
@@ -52,6 +54,22 @@ namespace Statistics
             chooseFileBtn.Text = "Choose file...";
             chooseFileBtn.Select();
             dataSet.Clear();
+            ProcessDone();
+        }
+
+        private void ProcessWorking()
+        {
+            watchTimeLabel.Text = "Working...";
+        }
+        
+        private void ProcessDone()
+        {
+            watchTimeLabel.Text = "Done!";
+        }
+
+        private void ProcessError()
+        {
+            watchTimeLabel.Text = "Error!";
         }
 
         private void roundChkBox_CheckedChanged(object sender, EventArgs e) => DisplayResults();
@@ -61,13 +79,13 @@ namespace Statistics
         {
             if (once && double.TryParse(nullHypTextBox.Text, out expVal))
             {
-                zScore = calcZScore(expVal, avg, stdErr);
+                zScore = CalcZScore(expVal, avg, stdErr);
                 DisplayResults();
             }
         }
 
         // Saves results and dataset to text file using file dialog
-        private void saveBtn_Click(object sender, EventArgs e)
+        private async void saveBtn_Click(object sender, EventArgs e)
         {
             Console.WriteLine("Save file button clicked");
             try
@@ -79,43 +97,49 @@ namespace Statistics
                     {
                         string fileName = saveFileDialog.FileName;
                         fileNameLabel.Text = fileName;
-                        using (StreamWriter streamWriter = new StreamWriter(fileName))
+                        ProcessWorking();
+                        await Task.Run(() =>
                         {
-                            // Stats
-                            streamWriter.WriteLine($"#\t Lines:\t\t\t\t{n}\n" +
-                                $"#\t Average:\t\t\t{avg}\n" +
-                                $"#\t Std. Deviation:\t{stdDev}\n" +
-                                $"#\t Std. Error:\t\t{stdErr}\n" +
-                                $"#\t Z-Test:\t\t\t{zScore}");
-
-                            // Dataset
-                            int dataSetX = 0;
-                            int dataSetY = n;
-                            foreach (int val in dataSet)
+                            using (StreamWriter streamWriter = new StreamWriter(fileName))
                             {
-                                ++dataSetX;
-                                if (dataSetX < dataSetY)
+                                // Stats
+                                streamWriter.WriteLine($"#\t Lines:\t\t\t\t{n}\n" +
+                                    $"#\t Average:\t\t\t{avg}\n" +
+                                    $"#\t Std. Deviation:\t{stdDev}\n" +
+                                    $"#\t Std. Error:\t\t{stdErr}\n" +
+                                    $"#\t Z-Test:\t\t\t{zScore}");
+
+                                // Dataset
+                                int dataSetX = 0;
+                                int dataSetY = n;
+                                foreach (int val in dataSet)
                                 {
-                                    streamWriter.WriteLine($"{val}");
-                                }
-                                else
-                                {
-                                    streamWriter.Write($"{val}");
+                                    ++dataSetX;
+                                    if (dataSetX < dataSetY)
+                                    {
+                                        streamWriter.WriteLine($"{val}");
+                                    }
+                                    else
+                                    {
+                                        streamWriter.Write($"{val}");
+                                    }
                                 }
                             }
-                        }
-                        MessageBox.Show($"Saved to: {fileName}");
+                        });
+                        MessageBox.Show($"Saved to: {fileName}", "Finished");
+                        ProcessDone();
                     }
                 }
             }
             catch (Exception exp)
             {
-                MessageBox.Show($"Save unsuccessful!\n{exp.Message}");
+                ProcessError();
+                MessageBox.Show($"Save unsuccessful!\n{exp.Message}", "Error");
             }
         }
 
     // Button that pops-up a file dialog, parses file, and populate dataset with file contents
-    private void chooseFileBtn_Click(object sender, EventArgs e)
+    private async void chooseFileBtn_Click(object sender, EventArgs e)
         {
             Console.WriteLine("Load file button clicked");
             try
@@ -125,61 +149,71 @@ namespace Statistics
                     openFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*|Your mother (*.fat)|*.fat";
                     if (openFileDialog.ShowDialog() == DialogResult.OK)
                     {
+                        ProcessWorking();
                         bool badData = false;   // No bad data exists by default
                         string fileName = openFileDialog.FileName;
                         fileNameLabel.Text = fileName;
                         StreamReader streamReader = new StreamReader(fileName);
                         Console.WriteLine("File loaded into Dataset!");
-                        
+
                         // Parse in
-                        foreach (string line in streamReader.ReadToEnd().Split('\n'))
+                        await Task.Run(() =>
                         {
-                            if (int.TryParse(line, out int lineInt))
+                            foreach (string line in streamReader.ReadToEnd().Split('\n'))
                             {
-                                dataSet.Add(lineInt);
+                                if (int.TryParse(line, out int lineInt))
+                                {
+                                    dataSet.Add(lineInt);
+                                }
+                                //Format understanding
+                                else if (line[0] != headerChar || line[0] != '\n')  // Exclude # or newLines
+                                {
+                                    badData = true;
+                                }
                             }
-                            //Format understanding
-                            else if (line[0] != headerChar || line[0] != '\n')  // Exclude # or newLines
-                            {
-                                badData = true;
-                            }
-                        }
+                        });
                         if (!badData)
                         {
-                            MessageBox.Show("Contents partially imported!\n\nData missing? Make sure the file contents are in the correct format.\nEx:\t1\n\t2\n\t3\n\t4\n\t5");
+                            MessageBox.Show("Contents partially imported!\n\nData missing? Make sure the file contents are in the correct format.\nEx:\t1\n\t2\n\t3\n\t4\n\t5", "Warning");
                         }
                         else
                         {
-                            MessageBox.Show("Contents imported successfully!");
+                            MessageBox.Show("Contents imported successfully!", "Finished");
                         }
+                        ProcessDone();
                     }
                 }
                 chooseFileBtn.Text = "Choose another file...";
             }
             catch (Exception exp)
             {
-                MessageBox.Show($"Failed to open file!\n{exp.Message}");
+                ProcessError();
+                MessageBox.Show($"Failed to open file!\n{exp.Message}", "Error");
             }
         }
 
         // Calculates statistictal propteries of a dataset and calls DisplayResults()
-        private void calcBtn_Click(object sender, EventArgs e)
+        private async void calcBtn_Click(object sender, EventArgs e)
         {
             if (dataSet.Count > 0 && !once)
             {
                 Stopwatch watch = Stopwatch.StartNew();
                 try
                 {
-                    sum = calcSum(dataSet, out n);
-                    avg = calcAvg(sum, n);
-                    stdDev = calcStdDev(dataSet, avg, n);
-                    stdErr = calcStdErr(stdDev, n);
+                    ProcessWorking();
+                    await Task.Run(() =>
+                    {
+                        sum = calcSum(dataSet, out n);
+                        avg = calcAvg(sum, n);
+                        stdDev = CalcStdDev(dataSet, avg, n);
+                        stdErr = CalcStdErr(stdDev, n);
+                    });
                     if (!double.TryParse(nullHypTextBox.Text, out expVal))
                     {
                         expVal = avg;
                         nullHypTextBox.Text = $"{avg}";
                     }
-                    zScore = calcZScore(expVal, avg, stdErr);
+                    zScore = CalcZScore(expVal, avg, stdErr);
                     watch.Stop();
                     long elapsedTime = watch.ElapsedMilliseconds;
                     Console.WriteLine($"Took: {elapsedTime} ms");
@@ -187,11 +221,16 @@ namespace Statistics
                     once = true;
                     DisplayResults();
                 }
-                catch (Exception exp) { MessageBox.Show($"Error attempting to calculate!\n{exp.Message}"); }
+                catch (Exception exp)
+                {
+                    MessageBox.Show($"Error attempting to calculate!\n{exp.Message}", "Error");
+                    ProcessError();
+                }
             }
             else
             {
                 MessageBox.Show("Error!\nNo data imported or has already been calculated.");
+                ProcessError();
             }
         }
 
@@ -215,7 +254,7 @@ namespace Statistics
         }
 
         // Calculates standard deviation of dataset
-        static double calcStdDev(List<int> dataSet, double avg, int n)
+        static double CalcStdDev(List<int> dataSet, double avg, int n)
         {
             double diff = 0;
             foreach (int value in dataSet) { diff += Math.Pow(value - avg, 2); }
@@ -223,8 +262,10 @@ namespace Statistics
             return stdDev;
         }
 
+        private void Form1_HelpRequested(object sender, HelpEventArgs hlpevent) => MessageBox.Show("Author:\tNick Martin\nGithub:\thttps://github.com/nickmartin1ee7/Statistical-Analysis", "Credits");
+
         // Calculates standard error of dataset
-        static double calcStdErr(double stdDev, int n)
+        static double CalcStdErr(double stdDev, int n)
         {
             double stdErr = stdDev / Math.Sqrt(n);
             return stdErr;
@@ -232,23 +273,24 @@ namespace Statistics
 
 
         // Calculates Z-Test result/score of dataset
-        static double calcZScore(double expVal, double avg, double stdErr)
+        static double CalcZScore(double expVal, double avg, double stdErr)
         {
             double zScore = Math.Abs((avg - expVal) * stdErr);
             return zScore;
         }
 
         // Button that calls random number generation method and times the milliseconds it takes to generate set
-        private void randGenBtn_Click(object sender, EventArgs e)
+        private async void randGenBtn_Click(object sender, EventArgs e)
         {
             once = false;
             try
             {
+                ProcessWorking();
                 Stopwatch watch = Stopwatch.StartNew();
                 int randN = int.Parse(randNTextBox.Text);
                 int randMin = int.Parse(randMinTextbox.Text);
                 int randMax = int.Parse(randMaxTextBox.Text);
-                dataSet.AddRange(GenerateRandom(randN, randMin, randMax)); // Returns List<int> to List dataSet<int>
+                await Task.Run(() => { dataSet.AddRange(GenerateRandom(randN, randMin, randMax)); }); // Returns List<int> to List dataSet<int>
                 watch.Stop();
                 long elapsedTime = watch.ElapsedMilliseconds;
                 Console.WriteLine($"Took: {elapsedTime} ms");
@@ -256,7 +298,7 @@ namespace Statistics
             }
             catch (Exception exp)
             {
-                MessageBox.Show($"Error generating random number!\n{exp.Message}");
+                MessageBox.Show($"Error generating random number!\n{exp.Message}", "Error");
             }
         }
 
